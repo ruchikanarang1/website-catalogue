@@ -6,22 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'dist',
-    sourcemap: false,
-    minify: 'esbuild', // Changed from terser to esbuild (built-in)
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
-              return 'vendor';
-            }
-            if (id.includes('@supabase')) {
-              return 'supabase';
-            }
-          }
-        }
-      }
-    }
+    sourcemap: false
   },
   server: {
     port: 3000
