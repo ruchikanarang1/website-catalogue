@@ -1,0 +1,58 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables (CRITICAL - contains sensitive keys)
+.env
+.env.local
+.env.production
+.env.development
+
+# Database migrations and fixes (contain sensitive data)
+*.sql
+database-migrations.sql
+FIX_*.sql
+
+# Kiro specs and documentation
+.kiro/
+
+# Build outputs
+build_output.txt
+git_status.txt
+
+# Deployment and troubleshooting docs (may contain sensitive info)
+DEPLOYMENT_CHECKLIST.md
+MIGRATION_FIXES_APPLIED.md
+TROUBLESHOOTING_*.md
+RUN_THIS_SQL_MIGRATION.md
+QUICK_ADD_FEATURE.md
+DOMAIN_SETUP.md
+
+# Documentation files (development notes, not needed for deployment)
+*.md
+!README.md
+
+# CSV templates
+*.csv
+template.csv
