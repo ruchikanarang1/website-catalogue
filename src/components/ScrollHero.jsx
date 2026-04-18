@@ -2,165 +2,154 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Phone } from 'lucide-react';
 
-// Replace this with your Supabase Storage video URL once uploaded
-const VIDEO_URL = 'https://jjkgsmljveixsdryxlsy.supabase.co/storage/v1/object/sign/website%20video/poonam%20video.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81NzQ4NTIzOS02MDViLTRmMWEtOWJlMy01N2VkMTEwY2QxNjciLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ3ZWJzaXRlIHZpZGVvL3Bvb25hbSB2aWRlby5tcDQiLCJpYXQiOjE3NzY1MTUzMDgsImV4cCI6MjA5MTg3NTMwOH0.bIygr1-Wv5op0bOn25ROIt7jo-g0szca0gloNWhr8m8'; // e.g. 'https://jjkgsmljveixsdryxlsy.supabase.co/storage/v1/object/public/assets/hero.mp4'
+const VIDEO_URL = 'https://jjkgsmljveixsdryxlsy.supabase.co/storage/v1/object/sign/website%20video/poonam%20video.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV81NzQ4NTIzOS02MDViLTRmMWEtOWJlMy01N2VkMTEwY2QxNjciLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ3ZWJzaXRlIHZpZGVvL3Bvb25hbSB2aWRlby5tcDQiLCJpYXQiOjE3NzY1MTc2MjAsImV4cCI6MjA5MTg3NzYyMH0.GGFv8FGDKYohpLxfm2twU-brbSw1gQQkNI3mTWAId3o'; // Set to your Supabase video URL when ready
 
 export default function ScrollHero({ companyName, companyPhone }) {
   return (
     <section style={{
-      position: 'relative',
       width: '100%',
-      height: '100vh',
-      minHeight: '600px',
-      overflow: 'hidden',
+      minHeight: '100vh',
+      background: '#ffffff',
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#0a0a0a'
+      alignItems: 'stretch',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
-      {/* Video background */}
-      {VIDEO_URL ? (
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            opacity: 0.7
-          }}
-        >
-          <source src={VIDEO_URL} type="video/mp4" />
-        </video>
-      ) : (
-        /* Fallback: animated gradient until video is added */
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(135deg, #0f172a 0%, #1c1917 40%, #0c0a09 100%)',
-        }}>
-          {/* Subtle grid pattern */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            backgroundImage: `linear-gradient(rgba(220,38,38,0.05) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(220,38,38,0.05) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
-          }} />
-          {/* Glow */}
-          <div style={{
-            position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)',
-            width: '600px', height: '400px',
-            background: 'radial-gradient(ellipse, rgba(220,38,38,0.15) 0%, transparent 70%)',
-            pointerEvents: 'none'
-          }} />
-        </div>
-      )}
-
-      {/* Dark overlay */}
+      {/* Left — Text content */}
       <div style={{
-        position: 'absolute', inset: 0,
-        background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.35) 100%)'
-      }} />
-
-      {/* Content */}
-      <div style={{
-        position: 'relative', zIndex: 2,
-        textAlign: 'center', color: 'white',
-        padding: '2rem', maxWidth: '800px', width: '100%'
+        width: '38%',
+        minWidth: '300px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: '5rem 2rem 3rem 3rem',
+        position: 'relative',
+        zIndex: 2,
+        background: '#ffffff'
       }}>
+        {/* Eyebrow */}
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-          background: 'rgba(220,38,38,0.2)', border: '1px solid rgba(220,38,38,0.4)',
-          borderRadius: '999px', padding: '0.35rem 1rem',
-          marginBottom: '1.75rem', fontSize: '0.78rem', fontWeight: 600, color: '#EF4444',
-          letterSpacing: '0.05em', textTransform: 'uppercase'
+          marginBottom: '2rem'
         }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
-          Premium Steel Supplier
+          <div style={{ width: 32, height: 2, background: '#DC2626' }} />
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#DC2626', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            Premium Steel Supplier
+          </span>
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(2.5rem, 6vw, 5rem)',
+          fontSize: 'clamp(2.25rem, 4vw, 3.75rem)',
           fontWeight: 900,
-          lineHeight: 1.0,
-          marginBottom: '1.5rem',
+          lineHeight: 1.05,
+          color: '#111111',
           letterSpacing: '-0.03em',
-          color: 'white',
-          textShadow: '0 2px 40px rgba(0,0,0,0.5)'
+          marginBottom: '1.5rem'
         }}>
           {companyName || 'Poonam Stainless Steel'}
         </h1>
 
         <p style={{
-          fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-          color: 'rgba(255,255,255,0.75)',
-          lineHeight: 1.7,
-          marginBottom: '2.5rem',
-          maxWidth: '560px',
-          margin: '0 auto 2.5rem'
+          fontSize: '1rem',
+          color: '#6B7280',
+          lineHeight: 1.65,
+          marginBottom: '2rem',
+          maxWidth: '340px'
         }}>
           Quality steel products for construction, infrastructure, and industry. Trusted by 1000+ clients across the region.
         </p>
 
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
           <Link to="/products" style={{
             background: '#DC2626', color: 'white',
-            padding: '1rem 2.5rem', borderRadius: '10px',
-            fontWeight: 700, fontSize: '1rem',
+            padding: '0.9rem 2rem', borderRadius: '8px',
+            fontWeight: 700, fontSize: '0.95rem',
             textDecoration: 'none',
-            display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
-            boxShadow: '0 0 40px rgba(220,38,38,0.35)',
-            transition: 'transform 0.2s, background 0.2s'
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            transition: 'background 0.15s, transform 0.15s'
           }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.background = '#B91C1C'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.background = '#DC2626'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#B91C1C'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#DC2626'; e.currentTarget.style.transform = 'translateY(0)'; }}
           >
-            Browse Catalogue <ArrowRight size={20} />
+            Browse Catalogue <ArrowRight size={18} />
           </Link>
           <Link to="/contact" style={{
-            background: 'rgba(255,255,255,0.1)', color: 'white',
-            padding: '1rem 2.5rem', borderRadius: '10px',
-            fontWeight: 600, fontSize: '1rem',
-            textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)',
-            display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
-            backdropFilter: 'blur(8px)',
-            transition: 'background 0.2s'
+            background: 'transparent', color: '#111111',
+            padding: '0.9rem 2rem', borderRadius: '8px',
+            fontWeight: 600, fontSize: '0.95rem',
+            textDecoration: 'none', border: '1.5px solid #E5E7EB',
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            transition: 'border-color 0.15s'
           }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+            onMouseEnter={e => e.currentTarget.style.borderColor = '#111111'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = '#E5E7EB'}
           >
-            <Phone size={18} /> Get a Quote
+            <Phone size={16} /> Get a Quote
           </Link>
         </div>
 
-        {companyPhone && (
-          <p style={{ marginTop: '2rem', fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>
-            Call us: <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>{companyPhone}</span>
-          </p>
-        )}
+        {/* Stats row */}
+        <div style={{ display: 'flex', gap: '2rem', borderTop: '1px solid #F3F4F6', paddingTop: '2rem' }}>
+          {[['20+', 'Years'], ['1000+', 'Clients'], ['500+', 'Products']].map(([val, label]) => (
+            <div key={label}>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#111111', lineHeight: 1 }}>{val}</div>
+              <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '0.25rem', fontWeight: 500 }}>{label}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Right — Video */}
       <div style={{
-        position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
-        color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', letterSpacing: '0.1em'
+        flex: 1,
+        position: 'relative',
+        overflow: 'hidden',
+        background: '#f1f1f1'
       }}>
-        <span>SCROLL</span>
-        <div style={{
-          width: '1px', height: '40px',
-          background: 'linear-gradient(to bottom, rgba(255,255,255,0.4), transparent)',
-          animation: 'scrollPulse 2s ease-in-out infinite'
-        }} />
+        {VIDEO_URL ? (
+          <video
+            autoPlay muted loop playsInline
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          >
+            <source src={VIDEO_URL} type="video/mp4" />
+          </video>
+        ) : (
+          /* Fallback grid until video is added */
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <div style={{
+              position: 'absolute', inset: 0,
+              backgroundImage: `linear-gradient(rgba(220,38,38,0.06) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(220,38,38,0.06) 1px, transparent 1px)`,
+              backgroundSize: '50px 50px'
+            }} />
+            <div style={{
+              position: 'absolute', top: '30%', left: '40%',
+              width: '300px', height: '300px',
+              background: 'radial-gradient(ellipse, rgba(220,38,38,0.2) 0%, transparent 70%)'
+            }} />
+            <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.8rem', position: 'relative', zIndex: 1 }}>
+              Add video URL to ScrollHero.jsx
+            </p>
+          </div>
+        )}
+
       </div>
 
+      {/* Mobile: stack vertically */}
       <style>{`
-        @keyframes scrollPulse {
-          0%, 100% { opacity: 0.4; transform: scaleY(1); }
-          50% { opacity: 1; transform: scaleY(1.2); }
+        @media (max-width: 768px) {
+          section > div:first-child {
+            width: 100% !important;
+            min-width: unset !important;
+            padding: 5rem 1.5rem 2rem !important;
+          }
+          section > div:last-child {
+            display: none !important;
+          }
         }
       `}</style>
     </section>
