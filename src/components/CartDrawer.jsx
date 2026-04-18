@@ -71,6 +71,13 @@ export default function CartDrawer() {
       return;
     }
 
+    // Block order if profile is incomplete
+    if (!profile.name || profile.name === 'Customer' || !profile.phone) {
+      closeCart();
+      navigate('/profile');
+      return;
+    }
+
     // Check reference code
     if (!referenceCode.trim()) {
       setError('Reference code is required');
@@ -89,23 +96,22 @@ export default function CartDrawer() {
       // Prepare order data using profile information
       const orderData = {
         company_id: companyId,
-        customer_id: profile.id,
         customer_name: profile.name || 'Unknown',
         customer_phone: profile.phone || '',
         customer_email: profile.email || user.email || '',
-        customer_address: profile.delivery_address || '',
-        employee_reference_id: referenceCode,
+        notes: referenceCode ? `Ref: ${referenceCode} | Address: ${profile.delivery_address || ''}` : (profile.delivery_address || null),
         items: cart.map(item => ({
           product_id: item.id,
+          name: item.name,
           product_name: item.name,
           quantity: item.quantity,
           unit_price: item.price || 0,
           category: item.category || '',
           unit: item.selectedUnit || item.unit || 'pieces'
         })),
-        total_amount: total,
-        status: 'pending',
-        notes: null
+        total: total,
+        status: 'received',
+        created_at: new Date().toISOString()
       };
 
       // Insert order

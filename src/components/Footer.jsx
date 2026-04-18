@@ -145,7 +145,7 @@ export default function Footer() {
               flexDirection: 'column',
               gap: '1rem'
             }}>
-              {company?.contact_address && (
+              {(company?.address || company?.contact_address) && (
                 <div style={{
                   display: 'flex',
                   gap: '0.75rem',
@@ -157,11 +157,11 @@ export default function Footer() {
                     color: '#d1d5db',
                     lineHeight: 1.5
                   }}>
-                    {company.contact_address}
+                    {company.address || company.contact_address}
                   </span>
                 </div>
               )}
-              {company?.contact_phone && (
+              {(company?.phone || company?.contact_phone) && (
                 <div style={{
                   display: 'flex',
                   gap: '0.75rem',
@@ -169,18 +169,18 @@ export default function Footer() {
                 }}>
                   <Phone size={18} color="#dc2626" style={{ flexShrink: 0 }} />
                   <a
-                    href={`tel:${company.contact_phone}`}
+                    href={`tel:${company.phone || company.contact_phone}`}
                     style={{
                       fontSize: '0.9rem',
                       color: '#d1d5db',
                       textDecoration: 'none'
                     }}
                   >
-                    {company.contact_phone}
+                    {company.phone || company.contact_phone}
                   </a>
                 </div>
               )}
-              {company?.contact_email && (
+              {(company?.email || company?.contact_email) && (
                 <div style={{
                   display: 'flex',
                   gap: '0.75rem',
@@ -188,14 +188,14 @@ export default function Footer() {
                 }}>
                   <Mail size={18} color="#dc2626" style={{ flexShrink: 0 }} />
                   <a
-                    href={`mailto:${company.contact_email}`}
+                    href={`mailto:${company.email || company.contact_email}`}
                     style={{
                       fontSize: '0.9rem',
                       color: '#d1d5db',
                       textDecoration: 'none'
                     }}
                   >
-                    {company.contact_email}
+                    {company.email || company.contact_email}
                   </a>
                 </div>
               )}

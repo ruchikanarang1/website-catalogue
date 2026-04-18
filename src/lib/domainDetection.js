@@ -57,16 +57,16 @@ export async function getCompanyDetails(companyId) {
         id, 
         name, 
         location,
+        phone,
+        email,
+        address,
+        city,
+        state,
         website_description,
         website_tagline,
         contact_email,
         contact_phone,
-        contact_address,
-        hero_image_url,
-        logo_url,
-        primary_color,
-        secondary_color,
-        background_color
+        contact_address
       `)
       .eq('id', companyId)
       .single();

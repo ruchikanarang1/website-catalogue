@@ -28,7 +28,7 @@ export default function OrderHistory() {
       let query = supabase
         .from('orders')
         .select('*', { count: 'exact' })
-        .eq('customer_id', profile.id)
+        .eq('customer_email', profile.email)
         .order('created_at', { ascending: false })
         .range((page - 1) * ORDERS_PER_PAGE, page * ORDERS_PER_PAGE - 1);
 
@@ -56,7 +56,7 @@ export default function OrderHistory() {
   const getStatusColor = (status) => {
     const colors = {
       pending: '#f59e0b',
-      processing: '#3b82f6',
+      processing: '#6B7280',
       completed: '#10b981',
       cancelled: '#ef4444'
     };
@@ -299,8 +299,8 @@ export default function OrderHistory() {
                           fontWeight: 800,
                           color: orange
                         }}>
-                          {order.total_amount > 0
-                            ? `₹${order.total_amount.toLocaleString('en-IN')}`
+                          {(order.total || order.total_amount) > 0
+                            ? `₹${(order.total || order.total_amount).toLocaleString('en-IN')}`
                             : 'Quote Based'}
                         </div>
                       </div>
@@ -331,132 +331,19 @@ export default function OrderHistory() {
                       padding: '1.5rem',
                       background: '#f8fafc'
                     }}>
-                      {/* Customer Info */}
-                      <div style={{
-                        marginBottom: '1.5rem',
-                        padding: '1rem',
-                        background: 'white',
-                        borderRadius: '8px',
-                        border: '1px solid #e2e8f0'
-                      }}>
-                        <h4 style={{
-                          fontSize: '0.85rem',
-                          fontWeight: 700,
-                          color: navy,
-                          margin: '0 0 0.75rem',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em'
-                        }}>
-                          Delivery Information
-                        </h4>
-                        <div style={{
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                          gap: '0.75rem',
-                          fontSize: '0.85rem'
-                        }}>
-                          <div>
-                            <span style={{ color: '#94a3b8' }}>Name: </span>
-                            <span style={{ color: navy, fontWeight: 600 }}>
-                              {order.customer_name}
-                            </span>
-                          </div>
-                          <div>
-                            <span style={{ color: '#94a3b8' }}>Phone: </span>
-                            <span style={{ color: navy, fontWeight: 600 }}>
-                              {order.customer_phone}
-                            </span>
-                          </div>
-                          {order.customer_email && (
-                            <div>
-                              <span style={{ color: '#94a3b8' }}>Email: </span>
-                              <span style={{ color: navy, fontWeight: 600 }}>
-                                {order.customer_email}
-                              </span>
-                            </div>
-                          )}
-                          {order.customer_address && (
-                            <div style={{ gridColumn: '1 / -1' }}>
-                              <span style={{ color: '#94a3b8' }}>Address: </span>
-                              <span style={{ color: navy, fontWeight: 600 }}>
-                                {order.customer_address}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
                       {/* Order Items */}
-                      <h4 style={{
-                        fontSize: '0.85rem',
-                        fontWeight: 700,
-                        color: navy,
-                        margin: '0 0 0.75rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em'
-                      }}>
-                        Order Items
-                      </h4>
-                      <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.75rem'
-                      }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         {order.items?.map((item, idx) => (
-                          <div
-                            key={idx}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              padding: '1rem',
-                              background: 'white',
-                              borderRadius: '8px',
-                              border: '1px solid #e2e8f0',
-                              gap: '1rem'
-                            }}
-                          >
-                            <div style={{ flex: 1 }}>
-                              <div style={{
-                                fontSize: '0.9rem',
-                                fontWeight: 700,
-                                color: navy,
-                                marginBottom: '0.25rem'
-                              }}>
-                                {item.product_name}
-                              </div>
-                              {item.category && (
-                                <div style={{
-                                  fontSize: '0.75rem',
-                                  color: '#94a3b8'
-                                }}>
-                                  {item.category}
-                                </div>
-                              )}
-                            </div>
-                            <div style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '1rem'
-                            }}>
-                              <div style={{
-                                fontSize: '0.85rem',
-                                color: '#64748b'
-                              }}>
-                                Qty: <span style={{ fontWeight: 700, color: navy }}>
-                                  {item.quantity}
-                                </span>
-                              </div>
-                              <div style={{
-                                fontSize: '0.9rem',
-                                fontWeight: 700,
-                                color: orange
-                              }}>
-                                {item.unit_price > 0
-                                  ? `₹${item.unit_price.toLocaleString('en-IN')}`
-                                  : 'Quote'}
-                              </div>
-                            </div>
+                          <div key={idx} style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '0.75rem 1rem', background: 'white', borderRadius: '8px',
+                            border: '1px solid #e2e8f0', fontSize: '0.9rem'
+                          }}>
+                            <span style={{ fontWeight: 600, color: navy }}>{item.product_name || item.name}</span>
+                            <span style={{ color: '#64748b' }}>
+                              Qty: <span style={{ fontWeight: 700, color: navy }}>{item.quantity}</span>
+                              {item.unit ? ` ${item.unit}` : ''}
+                            </span>
                           </div>
                         ))}
                       </div>

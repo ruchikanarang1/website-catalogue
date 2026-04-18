@@ -181,6 +181,19 @@ export default function Navbar() {
                     <User size={18} />
                     <span>{profile?.name?.split(' ')[0] || 'Profile'}</span>
                   </Link>
+                  <Link
+                    to="/orders"
+                    style={{
+                      color: '#000',
+                      textDecoration: 'none',
+                      fontWeight: 500,
+                      fontSize: '0.9rem'
+                    }}
+                    onMouseEnter={(e) => e.target.style.color = '#dc2626'}
+                    onMouseLeave={(e) => e.target.style.color = '#000'}
+                  >
+                    Orders
+                  </Link>
                   <button
                     onClick={handleLogout}
                     style={{

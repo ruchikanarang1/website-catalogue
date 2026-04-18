@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        loadProfile(session.user.id);
+        loadProfile(session.user.id, session.user.user_metadata || {});
       } else {
         setLoading(false);
       }
@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        loadProfile(session.user.id);
+        loadProfile(session.user.id, session.user.user_metadata || {});
       } else {
         setProfile(null);
         setLoading(false);
@@ -43,8 +43,9 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Load customer profile
-  const loadProfile = async (userId) => {
+  // Load customer profile - if no customer_profiles row exists (e.g. ERP employee logging in),
+  // auto-create one so they can use the website as a customer. Website and ERP are separate concerns.
+  const loadProfile = async (userId, userMeta = {}) => {
     try {
       const { data, error } = await supabase
         .from('customer_profiles')
@@ -52,9 +53,28 @@ export function AuthProvider({ children }) {
         .eq('user_id', userId)
         .single();
 
-      if (error) {
-        console.error('Failed to load profile:', error);
-        setProfile(null);
+      if (error || !data) {
+        // No customer profile yet - create one so any logged-in user can use the website
+        const companyId = detectCompanyFromDomain();
+        const newProfile = {
+          user_id: userId,
+          company_id: companyId,
+          name: userMeta.full_name || userMeta.name || userMeta.email || 'Customer',
+          email: userMeta.email || '',
+          phone: userMeta.phone || '',
+        };
+        const { data: created, error: createError } = await supabase
+          .from('customer_profiles')
+          .insert(newProfile)
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Failed to create customer profile:', createError);
+          setProfile(null);
+        } else {
+          setProfile(created);
+        }
       } else {
         setProfile(data);
       }
@@ -193,7 +213,7 @@ export function AuthProvider({ children }) {
         });
       }
 
-      await loadProfile(data.user.id);
+      await loadProfile(data.user.id, { phone: data.user.phone, email: data.user.email });
     }
 
     return data;
