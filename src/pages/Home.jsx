@@ -151,7 +151,7 @@ export default function Home() {
       {/* ── CTA ── */}
       <section style={{ padding: '4rem 2rem', background: '#111111', color: 'white' }}>
         <div style={{ maxWidth: '700px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.02em', color: 'white' }}>
             Ready to place an order?
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1rem', lineHeight: 1.7, marginBottom: '2rem' }}>
