@@ -52,12 +52,12 @@ export default function Home() {
   const companyCity = company?.city || '';
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'Inter', -apple-system, sans-serif", color: '#111' }}>
+    <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'Inter', -apple-system, sans-serif", color: '#111', display: 'flex', flexDirection: 'column' }}>
       {/* ── Scroll-driven 3D Hero ── */}
       <ScrollHero companyName={companyName} companyPhone={companyPhone} />
 
       {/* ── Stats ── */}
-      <section style={{ background: '#DC2626', padding: '2rem' }}>
+      <section style={{ background: '#DC2626', padding: '2rem' }} className="stats-section">
         <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
           {stats.map(s => (
             <div key={s.label} style={{ textAlign: 'center', padding: '0.5rem' }}>
@@ -69,7 +69,7 @@ export default function Home() {
       </section>
 
       {/* ── Pain points ── */}
-      <section style={{ padding: '4rem 2rem', background: '#f8fafc' }}>
+      <section className="why-us-section" style={{ padding: '4rem 2rem', background: '#f8fafc' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#DC2626', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Why Choose Us</p>
           <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
@@ -101,14 +101,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Products ── */}
+      {/* ── Products Carousel ── */}
       {featuredProducts.length > 0 && (
-        <section style={{ padding: '4rem 2rem', background: 'white' }}>
-          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <section style={{ padding: '4rem 0 4rem', background: 'white', overflow: 'hidden' }} className="carousel-section">
+          <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
                 <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#DC2626', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Our Products</p>
-                <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>Featured from our catalogue</h2>
+                <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: '#111827', margin: 0, letterSpacing: '-0.02em' }}>Featured from our catalogue</h2>
               </div>
               <Link to="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#DC2626', fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none' }}
                 onMouseEnter={e => e.currentTarget.style.gap = '0.7rem'}
@@ -117,9 +117,17 @@ export default function Home() {
                 View All <ArrowRight size={16} />
               </Link>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
-              {featuredProducts.map(product => (
-                <ProductCard key={product.id} product={product} onAddToCart={() => addItem(product)} />
+          </div>
+          <div style={{ position: 'relative', overflow: 'hidden' }}>
+            <div className="carousel-track" style={{
+              display: 'flex', gap: '1.25rem',
+              animation: 'carousel 30s linear infinite',
+              width: 'max-content'
+            }}>
+              {[...featuredProducts, ...featuredProducts].map((product, i) => (
+                <div key={i} style={{ width: '220px', flexShrink: 0 }}>
+                  <ProductCard product={product} onAddToCart={() => addItem(product)} />
+                </div>
               ))}
             </div>
           </div>
@@ -127,7 +135,7 @@ export default function Home() {
       )}
 
       {/* ── Industries ── */}
-      <section style={{ padding: '4rem 2rem', background: '#f8fafc' }}>
+      <section style={{ padding: '4rem 2rem', background: '#f8fafc' }} className="industries-section">
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#DC2626', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Industries We Serve</p>
           <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: '#111827', marginBottom: '2rem', letterSpacing: '-0.02em' }}>
@@ -148,8 +156,39 @@ export default function Home() {
         </div>
       </section>
 
+      <style>{`
+        @keyframes carousel {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .carousel-track:hover { animation-play-state: paused; }
+
+        @media (max-width: 768px) {
+          /* Hide product range section */
+          .industries-section { display: none !important; }
+
+          /* Faster carousel on mobile */
+          .carousel-track { animation-duration: 15s !important; }
+
+          /* Mobile order: hero(0) → carousel(1) → stats(2) → why us(3) → cta(4) */
+          .carousel-section { order: 1; padding: 1.5rem 0 !important; }
+          .stats-section { order: 2; padding: 0.75rem 1rem !important; }
+          .why-us-section { order: 3; }
+          .cta-section { order: 4; }
+
+          /* Compact stats on mobile */
+          .stats-section > div {
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 0 !important;
+          }
+          .stats-section > div > div { padding: 0.25rem !important; }
+          .stats-section > div > div > div:first-child { font-size: 1.1rem !important; }
+          .stats-section > div > div > div:last-child { font-size: 0.65rem !important; margin-top: 0.1rem !important; }
+        }
+      `}</style>
+
       {/* ── CTA ── */}
-      <section style={{ padding: '4rem 2rem', background: '#111111', color: 'white' }}>
+      <section className="cta-section" style={{ padding: '4rem 2rem', background: '#111111', color: 'white' }}>
         <div style={{ maxWidth: '700px', margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.02em', color: 'white' }}>
             Ready to place an order?
