@@ -17,41 +17,27 @@ import { supabase } from './supabase';
  * 'www.company2.com': '987fcdeb-51a2-43f1-b789-123456789abc',
  * 'company2.com': '987fcdeb-51a2-43f1-b789-123456789abc',
  */
-const DOMAIN_COMPANY_MAP = {
-  // Development fallback
-  'localhost': '98f6ccba-d7ef-4a7d-b346-6d432178b863',
-  'localhost:5173': '98f6ccba-d7ef-4a7d-b346-6d432178b863', // Vite dev server
-  'localhost:3001': '98f6ccba-d7ef-4a7d-b346-6d432178b863', // Custom dev port
-  
-  // Production domains - add your custom domains here:
-  // COMPANY 1 - Replace with your actual company UUID from Supabase
-  // 'www.company1.com': 'YOUR_COMPANY_1_UUID_HERE',
-  // 'company1.com': 'YOUR_COMPANY_1_UUID_HERE',
-  
-  // COMPANY 2 - Replace with your actual company UUID from Supabase
-  // 'www.company2.com': 'YOUR_COMPANY_2_UUID_HERE',
-  // 'company2.com': 'YOUR_COMPANY_2_UUID_HERE',
-};
-
 /**
- * Detects the company ID based on the current domain
- * @returns {string|null} Company ID or null if not mapped
+ * Returns the company ID for this website deployment.
+ * Set VITE_COMPANY_ID in your environment variables when deploying.
+ * Falls back to localhost mapping for local development.
  */
+const LOCALHOST_COMPANY_ID = '69f9ce98-5855-4aa2-a60d-1bfece80178b';
+
 export function detectCompanyFromDomain() {
-  const hostname = window.location.hostname;
-  const hostnameWithPort = window.location.host; // includes port
-  
-  // Try with port first (for localhost:5173), then hostname only
-  let companyId = DOMAIN_COMPANY_MAP[hostnameWithPort];
-  if (companyId === undefined) {
-    companyId = DOMAIN_COMPANY_MAP[hostname];
+  // Production: read from env var set at deploy time
+  if (import.meta.env.VITE_COMPANY_ID) {
+    return import.meta.env.VITE_COMPANY_ID;
   }
-  
-  if (!companyId) {
-    console.warn(`No company mapped for domain: ${hostname}`);
+
+  // Local dev fallback
+  const host = window.location.host;
+  if (host.startsWith('localhost')) {
+    return LOCALHOST_COMPANY_ID;
   }
-  
-  return companyId || null;
+
+  console.warn(`VITE_COMPANY_ID is not set for domain: ${host}`);
+  return null;
 }
 
 /**
