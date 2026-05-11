@@ -17,6 +17,7 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import OrderHistory from './pages/OrderHistory';
+import SupplierPortal from './pages/SupplierPortal';
 
 // Handles OAuth redirect back into the website
 function AuthCallback() {
@@ -99,6 +100,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <OrderHistory />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/supplier-portal"
+                element={
+                  <ProtectedRoute>
+                    <SupplierPortal />
                   </ProtectedRoute>
                 }
               />

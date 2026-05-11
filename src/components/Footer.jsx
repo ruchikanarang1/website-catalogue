@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { detectAndLoadCompany } from '../lib/domainDetection';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Footer() {
   const [company, setCompany] = useState(null);
@@ -12,7 +13,18 @@ export default function Footer() {
     });
   }, []);
 
+  const { user } = useAuth();
   const currentYear = new Date().getFullYear();
+
+  const customerLinks = [
+    { to: '/login', label: 'My Account' },
+    { to: '/orders', label: 'Order History' },
+    { to: '/contact', label: 'Help & Support' }
+  ];
+
+  if (user) {
+    customerLinks.splice(2, 0, { to: '/supplier-portal', label: 'Supplier Portal' });
+  }
 
   return (
     <footer style={{
@@ -107,11 +119,7 @@ export default function Footer() {
               flexDirection: 'column',
               gap: '0.75rem'
             }}>
-              {[
-                { to: '/login', label: 'My Account' },
-                { to: '/orders', label: 'Order History' },
-                { to: '/contact', label: 'Help & Support' }
-              ].map(link => (
+              {customerLinks.map(link => (
                 <Link
                   key={link.to}
                   to={link.to}
