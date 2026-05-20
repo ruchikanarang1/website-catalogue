@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Package, Plus, Minus } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 
-export default function ProductCard({ product, onAddToCart }) {
+export default function ProductCard({ product, onAddToCart, onClick }) {
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [selectedSize, setSelectedSize] = useState('');
@@ -11,12 +11,7 @@ export default function ProductCard({ product, onAddToCart }) {
   const red = '#dc2626';
   const black = '#000000';
 
-  // Check if product is in cart and get quantity
-  const cartItem = cart.find(item => item.id === product.id);
-  const quantity = cartItem?.quantity || 0;
-
   // Get size options from the size array field
-  // Handle both array format and potential string format
   let sizeOptions = [];
   if (Array.isArray(product.size)) {
     sizeOptions = product.size;
@@ -25,6 +20,20 @@ export default function ProductCard({ product, onAddToCart }) {
   } else if (typeof product.size === 'string' && product.size) {
     sizeOptions = product.size.split(',').map(s => s.trim());
   }
+
+  // Pre-select first size if available
+  useEffect(() => {
+    if (sizeOptions.length > 0 && !selectedSize) {
+      setSelectedSize(sizeOptions[0]);
+    }
+  }, [sizeOptions, selectedSize]);
+
+  // Check if specific variant is in cart
+  const cartItemId = selectedSize ? `${product.id}-${selectedSize}` : product.id;
+  const cartItem = cart.find(item => item.cartItemId === cartItemId);
+  const quantity = cartItem?.quantity || 0;
+
+
 
   // Debug log to see what we're getting
   if (product.id && (product.size || product.sizes)) {
@@ -40,18 +49,18 @@ export default function ProductCard({ product, onAddToCart }) {
   const handleIncrease = (e) => {
     e.stopPropagation();
     if (quantity === 0) {
-      onAddToCart(product);
+      onAddToCart(product, selectedSize);
     } else {
-      updateQuantity(product.id, quantity + 1);
+      updateQuantity(cartItemId, quantity + 1);
     }
   };
 
   const handleDecrease = (e) => {
     e.stopPropagation();
     if (quantity === 1) {
-      removeItem(product.id);
+      removeItem(cartItemId);
     } else {
-      updateQuantity(product.id, quantity - 1);
+      updateQuantity(cartItemId, quantity - 1);
     }
   };
 
@@ -66,10 +75,12 @@ export default function ProductCard({ product, onAddToCart }) {
         display: 'flex',
         flexDirection: 'column',
         cursor: 'pointer',
-        boxShadow: isHovered ? '0 4px 12px rgba(0,0,0,0.1)' : 'none'
+        boxShadow: isHovered ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
+        height: '100%'
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
     >
       {/* Product Image */}
       <div style={{
@@ -96,7 +107,8 @@ export default function ProductCard({ product, onAddToCart }) {
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover'
+                objectFit: 'contain',
+                padding: '0.5rem'
               }}
             />
           ) : (

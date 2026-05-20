@@ -308,18 +308,18 @@ export default function SupplierPortal() {
     };
 
     return (
-        <div style={{ maxWidth: '1000px', margin: '80px auto', padding: '1rem' }}>
-            <div style={{ textAlign: 'center', marginBottom: '2.5rem', marginTop: '1rem' }}>
-                <h1 style={{ fontSize: '2.2rem', fontWeight: 900, background: 'linear-gradient(135deg, #0f172a 0%, #2563eb 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '0.5rem' }}>
+        <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '1rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '2rem', marginTop: '1rem' }}>
+                <h1 style={{ fontSize: '2.2rem', fontWeight: 900, background: 'linear-gradient(135deg, #0f172a 0%, #DC2626 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '0.5rem' }}>
                     Supplier Product Portal
                 </h1>
                 <p style={{ color: '#64748b', fontSize: '1rem' }}>Share your catalogue details for registration and inventory sync</p>
             </div>
 
-            <div className="card" style={{ padding: '2rem', marginBottom: '2rem', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', borderRadius: '20px', background: 'white' }}>
+            <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', borderRadius: '12px', background: 'white' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                    <div style={{ background: '#eff6ff', color: '#2563eb', padding: '12px', borderRadius: '12px' }}><Building2 size={24} /></div>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>Step 1: Your Information</h2>
+                    <div style={{ background: '#fef2f2', color: '#DC2626', padding: '10px', borderRadius: '8px' }}><Building2 size={20} /></div>
+                    <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0 }}>Step 1: Your Information</h2>
                 </div>
                 <div style={{ maxWidth: '500px' }}>
                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 900, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Supplier / Vendor Name</label>
@@ -336,14 +336,14 @@ export default function SupplierPortal() {
                 </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', paddingLeft: '1rem' }}>
-                <div style={{ background: '#fef3c7', color: '#d97706', padding: '10px', borderRadius: '10px' }}><LayoutGrid size={20} /></div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>Step 2: Brands & Products</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', paddingLeft: '0.5rem' }}>
+                <div style={{ background: '#fef2f2', color: '#DC2626', padding: '8px', borderRadius: '8px' }}><LayoutGrid size={18} /></div>
+                <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0 }}>Step 2: Brands & Products</h2>
             </div>
 
             {brands.map((brand, bIdx) => (
-                <div key={brand.id} className="card" style={{ marginBottom: '2rem', borderRadius: '20px', overflow: 'hidden', border: '1px solid #e2e8f0', background: 'white' }}>
-                    <div style={{ background: '#f8fafc', padding: '1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div key={brand.id} className="card" style={{ marginBottom: '1.5rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', background: 'white', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                    <div style={{ background: '#f8fafc', padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', gap: '1rem', flex: 1 }}>
                             <div style={{ flex: 1 }}>
                                 <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px' }}>Brand Name</label>
@@ -390,7 +390,7 @@ export default function SupplierPortal() {
                                     style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                        <div style={{ background: '#eff6ff', color: '#3b82f6', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.8rem' }}>{pIdx + 1}</div>
+                                        <div style={{ background: '#fef2f2', color: '#DC2626', width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.75rem' }}>{pIdx + 1}</div>
                                         <div>
                                             <div style={{ fontWeight: 800, fontSize: '0.95rem', color: product.name ? '#0f172a' : '#94a3b8' }}>
                                                 {product.name || 'New Product'}
@@ -459,7 +459,7 @@ export default function SupplierPortal() {
                                                 <h4 style={{ margin: 0, fontSize: '0.75rem', fontWeight: 900, color: '#475569', textTransform: 'uppercase' }}>Variants</h4>
                                                 <button 
                                                     onClick={() => addVariant(brand.id, product.id)}
-                                                    style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: '6px', padding: '4px 10px', fontSize: '0.7rem', fontWeight: 800, cursor: 'pointer' }}
+                                                    style={{ background: '#DC2626', color: '#fff', border: 'none', borderRadius: '6px', padding: '4px 10px', fontSize: '0.7rem', fontWeight: 800, cursor: 'pointer' }}
                                                 >
                                                     + ADD SIZE
                                                 </button>
@@ -498,7 +498,7 @@ export default function SupplierPortal() {
                         <button 
                             onClick={() => addProduct(brand.id)}
                             style={{ 
-                                width: '100%', marginTop: '1.5rem', padding: '1rem', background: '#fff', border: '2px dashed #cbd5e1', borderRadius: '15px', color: '#2563eb', fontWeight: 800, cursor: 'pointer'
+                                width: '100%', marginTop: '1rem', padding: '0.75rem', background: '#fff', border: '2px dashed #cbd5e1', borderRadius: '8px', color: '#DC2626', fontWeight: 800, cursor: 'pointer', fontSize: '0.85rem'
                             }}
                         >
                             + ADD ANOTHER PRODUCT
@@ -510,7 +510,7 @@ export default function SupplierPortal() {
             <button 
                 onClick={addBrand}
                 style={{ 
-                    width: '100%', padding: '1.25rem', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '20px', fontWeight: 900, fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '4rem'
+                    width: '100%', padding: '1rem', background: '#DC2626', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 900, fontSize: '0.95rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '4rem', boxShadow: '0 4px 6px -1px rgba(220, 38, 38, 0.2)'
                 }}
             >
                 <Plus size={20} /> ADD ANOTHER BRAND
@@ -549,7 +549,7 @@ export default function SupplierPortal() {
                 <button 
                     onClick={handleSubmitAll} disabled={submitting}
                     style={{ 
-                        background: directPublish ? '#10b981' : '#2563eb', color: '#fff', border: 'none', borderRadius: '30px', padding: '0.75rem 1.5rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: submitting ? 'not-allowed' : 'pointer'
+                        background: directPublish ? '#10b981' : '#DC2626', color: '#fff', border: 'none', borderRadius: '30px', padding: '0.75rem 1.5rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: submitting ? 'not-allowed' : 'pointer'
                     }}
                 >
                     {submitting ? 'PROCESSING...' : (directPublish ? 'PUBLISH LIVE' : 'SUBMIT CATALOGUE')} <Send size={18} />

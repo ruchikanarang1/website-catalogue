@@ -405,7 +405,7 @@ function CartStep({ cart, onQuantityChange, onRemove, total, orange, navy }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {cart.map((item) => (
         <div
-          key={item.id}
+          key={item.cartItemId}
           style={{
             display: 'flex',
             gap: '1rem',
@@ -461,6 +461,16 @@ function CartStep({ cart, onQuantityChange, onRemove, total, orange, navy }) {
                 {item.category}
               </p>
             )}
+            {item.selectedSize && (
+              <p style={{
+                margin: '0 0 0.5rem',
+                fontSize: '0.75rem',
+                color: '#64748b',
+                fontWeight: 600
+              }}>
+                Size: {item.selectedSize}
+              </p>
+            )}
             {item.dimensions && (
               <p style={{
                 margin: '0 0 0.5rem',
@@ -502,7 +512,7 @@ function CartStep({ cart, onQuantityChange, onRemove, total, orange, navy }) {
               border: '1px solid #e2e8f0'
             }}>
               <button
-                onClick={() => onQuantityChange(item.id, item.quantity - 1)}
+                onClick={() => onQuantityChange(item.cartItemId, item.quantity - 1)}
                 style={{
                   background: 'transparent',
                   border: 'none',
@@ -525,7 +535,7 @@ function CartStep({ cart, onQuantityChange, onRemove, total, orange, navy }) {
                 {item.quantity}
               </span>
               <button
-                onClick={() => onQuantityChange(item.id, item.quantity + 1)}
+                onClick={() => onQuantityChange(item.cartItemId, item.quantity + 1)}
                 style={{
                   background: 'transparent',
                   border: 'none',
@@ -542,7 +552,7 @@ function CartStep({ cart, onQuantityChange, onRemove, total, orange, navy }) {
 
             {/* Remove Button */}
             <button
-              onClick={() => onRemove(item.id)}
+              onClick={() => onRemove(item.cartItemId)}
               style={{
                 background: 'transparent',
                 border: 'none',

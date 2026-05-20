@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { detectCompanyFromDomain } from '../lib/domainDetection';
 import { useCart } from '../contexts/CartContext';
 import ProductCard from '../components/ProductCard';
+import ProductModal from '../components/ProductModal';
 
 export default function Products() {
   const companyId = detectCompanyFromDomain();
@@ -12,6 +13,7 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedBrand, setSelectedBrand] = useState('All');
   const [sortBy, setSortBy] = useState('name'); // 'name', 'price-low', 'price-high'
@@ -338,12 +340,19 @@ export default function Products() {
               <ProductCard
                 key={product.id}
                 product={product}
-                onAddToCart={() => addItem(product)}
+                onAddToCart={(prod, size) => addItem(prod, size)}
+                onClick={() => setSelectedProduct(product)}
               />
             ))}
           </div>
         )}
       </main>
+
+      <ProductModal 
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        product={selectedProduct}
+      />
 
       <style>{`
         @keyframes spin {

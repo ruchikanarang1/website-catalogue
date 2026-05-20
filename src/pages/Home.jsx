@@ -21,11 +21,7 @@ const whyUs = [
   { icon: TrendingUp, title: 'Competitive Pricing', desc: 'Direct from manufacturer pricing with volume discounts for regular buyers.' },
 ];
 
-const industries = [
-  'Structural Steel', 'Stainless Steel', 'MS Pipes & Tubes',
-  'Steel Plates', 'Angles & Channels', 'Roofing Sheets',
-  'TMT Bars', 'Coils & Strips', 'Fabrication'
-];
+
 
 export default function Home() {
   const companyId = detectCompanyFromDomain();
@@ -126,7 +122,7 @@ export default function Home() {
             }}>
               {[...featuredProducts, ...featuredProducts].map((product, i) => (
                 <div key={i} style={{ width: '220px', flexShrink: 0 }}>
-                  <ProductCard product={product} onAddToCart={() => addItem(product)} />
+                  <ProductCard product={product} onAddToCart={(prod, size) => addItem(prod, size)} />
                 </div>
               ))}
             </div>
@@ -134,27 +130,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── Industries ── */}
-      <section style={{ padding: '4rem 2rem', background: '#f8fafc' }} className="industries-section">
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#DC2626', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Industries We Serve</p>
-          <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: '#111827', marginBottom: '2rem', letterSpacing: '-0.02em' }}>
-            Our product range
-          </h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-            {industries.map(ind => (
-              <div key={ind} style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                background: 'white', border: '1px solid #e2e8f0', borderRadius: '999px',
-                padding: '0.5rem 1.1rem', fontSize: '0.85rem', fontWeight: 500, color: '#374151'
-              }}>
-                <CheckCircle size={14} color="#DC2626" />
-                {ind}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       <style>{`
         @keyframes carousel {
@@ -164,8 +140,6 @@ export default function Home() {
         .carousel-track:hover { animation-play-state: paused; }
 
         @media (max-width: 768px) {
-          /* Hide product range section */
-          .industries-section { display: none !important; }
 
           /* Faster carousel on mobile */
           .carousel-track { animation-duration: 15s !important; }

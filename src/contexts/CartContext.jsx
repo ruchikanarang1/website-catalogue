@@ -23,7 +23,15 @@ export function CartProvider({ children }) {
       const savedCart = localStorage.getItem(storageKey);
       if (savedCart) {
         try {
-          setCart(JSON.parse(savedCart));
+          // Normalize old cart items to have cartItemId if they don't
+          let parsed = JSON.parse(savedCart);
+          parsed = parsed.map(item => {
+            if (!item.cartItemId) {
+               return { ...item, cartItemId: item.selectedSize ? `${item.id}-${item.selectedSize}` : item.id };
+            }
+            return item;
+          });
+          setCart(parsed);
         } catch (err) {
           console.error('Failed to parse saved cart:', err);
         }
@@ -42,37 +50,55 @@ export function CartProvider({ children }) {
 
   /**
    * Add item to cart (or increment quantity if already exists)
-   * @param {Object} product - Product to add
    */
-  const addItem = (product) => {
+  const addItem = (product, size = null, quantity = 1, unit = 'pieces') => {
+    const cartItemId = size ? `${product.id}-${size}` : product.id;
     setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
+      const existing = prev.find((item) => item.cartItemId === cartItemId);
       if (existing) {
         // Increment quantity
         return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+          item.cartItemId === cartItemId
+            ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
-        // Add new item with quantity 1
-        return [...prev, { ...product, quantity: 1 }];
+        // Add new item
+        return [...prev, { ...product, cartItemId, selectedSize: size, selectedUnit: unit, quantity }];
       }
     });
   };
 
   /**
-   * Update quantity of an item in cart
-   * @param {string} productId - Product ID
-   * @param {number} quantity - New quantity (0 to remove)
+   * Add multiple items at once from the bulk modal table
    */
-  const updateQuantity = (productId, quantity) => {
+  const addBulkItems = (items) => {
+    setCart((prev) => {
+      let newCart = [...prev];
+      items.forEach(({ product, size, quantity, unit }) => {
+        if (quantity <= 0) return;
+        const cartItemId = size ? `${product.id}-${size}` : product.id;
+        const existingIdx = newCart.findIndex((item) => item.cartItemId === cartItemId);
+        if (existingIdx >= 0) {
+          newCart[existingIdx] = { ...newCart[existingIdx], quantity: newCart[existingIdx].quantity + quantity };
+        } else {
+          newCart.push({ ...product, cartItemId, selectedSize: size, selectedUnit: unit, quantity });
+        }
+      });
+      return newCart;
+    });
+  };
+
+  /**
+   * Update quantity of an item in cart
+   */
+  const updateQuantity = (cartItemId, quantity) => {
     if (quantity <= 0) {
-      removeItem(productId);
+      removeItem(cartItemId);
     } else {
       setCart((prev) =>
         prev.map((item) =>
-          item.id === productId ? { ...item, quantity } : item
+          item.cartItemId === cartItemId ? { ...item, quantity } : item
         )
       );
     }
@@ -80,42 +106,30 @@ export function CartProvider({ children }) {
 
   /**
    * Update unit of an item in cart
-   * @param {string} productId - Product ID
-   * @param {string} unit - New unit (pieces, bundles, kgs)
    */
-  const updateUnit = (productId, unit) => {
+  const updateUnit = (cartItemId, unit) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === productId ? { ...item, selectedUnit: unit } : item
+        item.cartItemId === cartItemId ? { ...item, selectedUnit: unit } : item
       )
     );
   };
 
   /**
    * Remove item from cart
-   * @param {string} productId - Product ID to remove
    */
-  const removeItem = (productId) => {
-    setCart((prev) => prev.filter((item) => item.id !== productId));
+  const removeItem = (cartItemId) => {
+    setCart((prev) => prev.filter((item) => item.cartItemId !== cartItemId));
   };
 
-  /**
-   * Clear all items from cart
-   */
   const clearCart = () => {
     setCart([]);
   };
 
-  /**
-   * Open cart drawer
-   */
   const openCart = () => {
     setIsOpen(true);
   };
 
-  /**
-   * Close cart drawer
-   */
   const closeCart = () => {
     setIsOpen(false);
   };
@@ -133,6 +147,7 @@ export function CartProvider({ children }) {
     cart,
     isOpen,
     addItem,
+    addBulkItems,
     updateQuantity,
     updateUnit,
     removeItem,

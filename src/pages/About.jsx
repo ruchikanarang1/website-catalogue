@@ -6,7 +6,8 @@ import { detectAndLoadCompany } from '../lib/domainDetection';
 export default function About() {
   const [company, setCompany] = useState(null);
 
-  const orange = '#FF6A00';
+  const primary = '#DC2626';
+  const primaryLight = '#ef4444';
   const navy = '#0f172a';
 
   useEffect(() => {
@@ -19,10 +20,10 @@ export default function About() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Hero Section */}
       <section style={{
-        background: `linear-gradient(135deg, ${navy} 0%, #1e293b 100%)`,
-        color: 'white',
-        padding: '3rem 2rem',
-        textAlign: 'center'
+        background: '#f8fafc',
+        padding: '4rem 2rem',
+        textAlign: 'center',
+        borderBottom: '1px solid #e2e8f0'
       }}>
         <div style={{
           maxWidth: '900px',
@@ -31,14 +32,17 @@ export default function About() {
           <h1 style={{
             fontSize: 'clamp(2rem, 5vw, 3rem)',
             fontWeight: 900,
-            marginBottom: '1rem'
+            marginBottom: '1rem',
+            color: '#111827'
           }}>
-            About <span style={{ color: orange }}>{company?.name || 'Us'}</span>
+            About <span style={{ color: primary }}>{company?.name || 'Us'}</span>
           </h1>
           <p style={{
-            fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-            color: '#cbd5e1',
-            lineHeight: 1.6
+            fontSize: 'clamp(1.1rem, 2vw, 1.25rem)',
+            color: '#64748b',
+            lineHeight: 1.6,
+            maxWidth: '600px',
+            margin: '0 auto'
           }}>
             Your trusted partner for quality steel products and reliable service
           </p>
@@ -64,14 +68,14 @@ export default function About() {
               <div style={{
                 width: '60px',
                 height: '60px',
-                background: `${orange}15`,
+                background: `${primary}15`,
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginBottom: '1.5rem'
               }}>
-                <Building2 size={32} color={orange} />
+                <Building2 size={32} color={primary} />
               </div>
               <h2 style={{
                 fontSize: '2rem',
@@ -100,10 +104,11 @@ export default function About() {
               </p>
             </div>
             <div style={{
-              background: '#f8fafc',
+              background: 'white',
               padding: '2.5rem',
               borderRadius: '16px',
-              border: `3px solid ${orange}20`
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.05)'
             }}>
               <h3 style={{
                 fontSize: '1.5rem',
@@ -122,7 +127,7 @@ export default function About() {
                 <div style={{
                   width: '40px',
                   height: '40px',
-                  background: orange,
+                  background: primary,
                   borderRadius: '8px',
                   display: 'flex',
                   alignItems: 'center',
@@ -138,24 +143,47 @@ export default function About() {
                     color: navy,
                     margin: '0 0 0.5rem 0'
                   }}>
-                    {company?.name || 'Steel Company'}
+                    {company?.name || 'Poonam Stainless Steel'}
                   </p>
                   <p style={{
                     color: '#64748b',
                     fontSize: '0.95rem',
-                    margin: 0
+                    margin: 0,
+                    lineHeight: 1.5
                   }}>
-                    {company?.location || 'Location information available on request'}
+                    {company?.contact_address || company?.address || company?.location || 'Location information available on request'}
                   </p>
                 </div>
               </div>
+
+              {/* Embedded Google Map */}
+              <div style={{
+                width: '100%',
+                height: '200px',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                marginBottom: '1.5rem',
+                border: '1px solid #e2e8f0',
+                background: '#f8fafc'
+              }}>
+                <iframe
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent((company?.name || 'Poonam Stainless Steel') + ' ' + (company?.city || company?.location || 'Pune'))}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                ></iframe>
+              </div>
+
               <Link
                 to="/contact"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
-                  color: orange,
+                  color: primary,
                   textDecoration: 'none',
                   fontWeight: 700,
                   fontSize: '0.95rem'
@@ -224,13 +252,13 @@ export default function About() {
                 <div style={{
                   width: '60px',
                   height: '60px',
-                  background: `${orange}15`,
+                  background: `${primary}15`,
                   borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: '1.5rem',
-                  color: orange
+                  color: primary
                 }}>
                   {value.icon}
                 </div>
@@ -275,10 +303,11 @@ export default function About() {
             What We Offer
           </h2>
           <div style={{
-            background: '#f8fafc',
+            background: 'white',
             padding: '2.5rem',
             borderRadius: '16px',
-            border: `3px solid ${orange}20`
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.05)'
           }}>
             <ul style={{
               listStyle: 'none',
@@ -312,7 +341,7 @@ export default function About() {
                     width: '8px',
                     height: '8px',
                     borderRadius: '50%',
-                    background: orange,
+                    background: primary,
                     flexShrink: 0
                   }} />
                   {item}
@@ -325,7 +354,7 @@ export default function About() {
 
       {/* CTA Section */}
       <section style={{
-        background: `linear-gradient(135deg, ${orange} 0%, #ff8533 100%)`,
+        background: navy,
         color: 'white',
         padding: '4rem 2rem',
         textAlign: 'center'
@@ -337,14 +366,16 @@ export default function About() {
           <h2 style={{
             fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
             fontWeight: 800,
-            marginBottom: '1.5rem'
+            marginBottom: '1.5rem',
+            color: 'white'
           }}>
             Ready to Work With Us?
           </h2>
           <p style={{
             fontSize: '1.1rem',
             marginBottom: '2rem',
-            opacity: 0.95
+            color: '#cbd5e1',
+            lineHeight: 1.6
           }}>
             Browse our product catalogue or get in touch to discuss your requirements
           </p>
@@ -357,8 +388,8 @@ export default function About() {
             <Link
               to="/products"
               style={{
-                background: 'white',
-                color: orange,
+                background: primary,
+                color: 'white',
                 padding: '1rem 2rem',
                 borderRadius: '12px',
                 textDecoration: 'none',
@@ -367,7 +398,8 @@ export default function About() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                transition: 'transform 0.2s'
+                transition: 'transform 0.2s',
+                border: `1px solid ${primary}`
               }}
               onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
               onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}

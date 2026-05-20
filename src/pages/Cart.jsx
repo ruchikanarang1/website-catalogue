@@ -189,7 +189,7 @@ export default function Cart() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {cart.map((item) => (
                 <div
-                  key={item.id}
+                  key={item.cartItemId}
                   style={{
                     background: 'white',
                     borderRadius: '4px',
@@ -251,6 +251,16 @@ export default function Cart() {
                         {item.category}
                       </p>
                     )}
+                    {item.selectedSize && (
+                      <p style={{
+                        margin: '0 0 0.5rem',
+                        fontSize: '0.875rem',
+                        color: '#64748b',
+                        fontWeight: 500
+                      }}>
+                        Size: {item.selectedSize}
+                      </p>
+                    )}
                     {item.dimensions && (
                       <p style={{
                         margin: '0 0 0.75rem',
@@ -286,7 +296,7 @@ export default function Cart() {
                     {/* Unit Selector */}
                     <select
                       value={item.selectedUnit || item.unit || 'pieces'}
-                      onChange={(e) => updateUnit(item.id, e.target.value)}
+                      onChange={(e) => updateUnit(item.cartItemId, e.target.value)}
                       style={{
                         padding: '0.5rem',
                         border: '1px solid #d1d5db',
@@ -316,7 +326,7 @@ export default function Cart() {
                       border: '1px solid #e5e7eb'
                     }}>
                       <button
-                        onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                        onClick={() => handleQuantityChange(item.cartItemId, item.quantity - 1)}
                         style={{
                           background: 'white',
                           border: '1px solid #000',
@@ -346,17 +356,17 @@ export default function Cart() {
                       <input
                         type="number"
                         min="1"
-                        value={inputValues[item.id] !== undefined ? inputValues[item.id] : item.quantity}
-                        onFocus={() => setInputValues(v => ({ ...v, [item.id]: String(item.quantity) }))}
-                        onChange={e => setInputValues(v => ({ ...v, [item.id]: e.target.value }))}
+                        value={inputValues[item.cartItemId] !== undefined ? inputValues[item.cartItemId] : item.quantity}
+                        onFocus={() => setInputValues(v => ({ ...v, [item.cartItemId]: String(item.quantity) }))}
+                        onChange={e => setInputValues(v => ({ ...v, [item.cartItemId]: e.target.value }))}
                         onBlur={e => {
                           const v = parseInt(e.target.value);
                           if (!isNaN(v) && v >= 1) {
-                            handleQuantityChange(item.id, v);
+                            handleQuantityChange(item.cartItemId, v);
                           } else {
-                            handleQuantityChange(item.id, 1);
+                            handleQuantityChange(item.cartItemId, 1);
                           }
-                          setInputValues(v => { const n = { ...v }; delete n[item.id]; return n; });
+                          setInputValues(v => { const n = { ...v }; delete n[item.cartItemId]; return n; });
                         }}
                         style={{
                           width: '60px',
@@ -371,7 +381,7 @@ export default function Cart() {
                         }}
                       />
                       <button
-                        onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                        onClick={() => handleQuantityChange(item.cartItemId, item.quantity + 1)}
                         style={{
                           background: '#000',
                           border: '1px solid #000',
@@ -395,7 +405,7 @@ export default function Cart() {
                     </div>
 
                     <button
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item.cartItemId)}
                       style={{
                         background: 'transparent',
                         border: 'none',

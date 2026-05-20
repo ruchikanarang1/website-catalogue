@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { supabase } from './lib/supabase';
@@ -18,6 +18,10 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import OrderHistory from './pages/OrderHistory';
 import SupplierPortal from './pages/SupplierPortal';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import AISmartOrder from './components/AISmartOrder';
+import { Sparkles } from 'lucide-react';
 
 // Handles OAuth redirect back into the website
 function AuthCallback() {
@@ -71,6 +75,8 @@ function ProfileIncompletePrompt() {
 }
 
 function App() {
+  const [isAIOpen, setIsAIOpen] = useState(false);
+
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -79,12 +85,59 @@ function App() {
             <Navbar />
             <CartDrawer />
             <ProfileIncompletePrompt />
+            
+            {/* AI Assistant FAB */}
+            <button
+              onClick={() => setIsAIOpen(true)}
+              style={{
+                position: 'fixed',
+                bottom: '2rem',
+                right: '2rem',
+                zIndex: 1000,
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                border: 'none',
+                boxShadow: '0 10px 25px rgba(59, 130, 246, 0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              <Sparkles size={28} color="white" />
+            </button>
+
+            {/* AI Assistant Modal */}
+            {isAIOpen && (
+              <div style={{
+                position: 'fixed',
+                top: 0, left: 0, right: 0, bottom: 0,
+                background: 'rgba(0,0,0,0.5)',
+                zIndex: 2000,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1rem'
+              }}>
+                <div style={{ width: '100%', maxWidth: '500px' }}>
+                  <AISmartOrder onClose={() => setIsAIOpen(false)} />
+                </div>
+              </div>
+            )}
+
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
               <Route path="/login" element={<Login />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route
