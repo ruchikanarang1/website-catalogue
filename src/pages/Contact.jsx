@@ -218,6 +218,7 @@ export default function Contact() {
                 poonamsteel2011@gmail.com
               </a>
             </p>
+          </div>
 
           {/* Contact Form */}
           <div style={{
