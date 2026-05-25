@@ -93,9 +93,11 @@ export default function CartDrawer() {
         throw new Error('Company not detected');
       }
 
+      const orderNumber = generateOrderNumber('CO', profile.name || 'Unknown');
       // Prepare order data using profile information
       const orderData = {
         company_id: companyId,
+        order_number: orderNumber,
         customer_name: profile.name || 'Unknown',
         customer_phone: profile.phone || '',
         customer_email: profile.email || user.email || '',
@@ -619,3 +621,25 @@ function SuccessStep({ orange, navy }) {
     </div>
   );
 }
+
+const generateOrderNumber = (prefix, clientName) => {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const datePart = `${yyyy}${mm}${dd}`;
+  
+  let clientSlug = String(clientName || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+  clientSlug = clientSlug.substring(0, 3);
+  if (!clientSlug) clientSlug = 'unk';
+  while (clientSlug.length < 3) {
+    clientSlug += 'x';
+  }
+  
+  const rand = Math.floor(100 + Math.random() * 900);
+  const suffix = `${clientSlug}${rand}`.substring(0, 6);
+  
+  return `${prefix}-${datePart}-${suffix}`;
+};

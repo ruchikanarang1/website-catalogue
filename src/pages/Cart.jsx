@@ -57,6 +57,7 @@ export default function Cart() {
         throw new Error('Company not detected');
       }
 
+      const orderNumber = generateOrderNumber('CO', profile.name || 'Unknown');
       const orderData = {
         company_id: companyId,
         customer_id: profile.id,
@@ -65,6 +66,7 @@ export default function Cart() {
         customer_email: profile.email || user.email || '',
         customer_address: profile.delivery_address || '',
         employee_reference_id: referenceCode,
+        order_number: orderNumber,
         items: cart.map(item => ({
           product_id: item.id,
           product_name: item.name,
@@ -87,6 +89,42 @@ export default function Cart() {
       if (insertError) {
         console.error('Order submission error:', insertError);
         throw new Error('Failed to submit order');
+      }
+
+      // Fetch company name dynamically for WhatsApp parameters
+      let companyName = 'Poonam Steel';
+      try {
+        const { data: compData } = await supabase
+          .from('companies')
+          .select('name')
+          .eq('id', companyId)
+          .single();
+        if (compData?.name) {
+          companyName = compData.name;
+        }
+      } catch (e) {
+        console.error('Error fetching company name for WhatsApp:', e);
+      }
+
+      // Send WhatsApp notification for Website Order
+      try {
+        const orderIdShort = data.order_number || (data.id ? `#${data.id.slice(0, 8)}` : 'N/A');
+        await supabase.functions.invoke('send-whatsapp', {
+          body: {
+            company_id: companyId,
+            to: orderData.customer_phone || profile.phone || '',
+            template_name: 'order_received',
+            components: [
+              orderData.customer_name || 'Customer',
+              orderIdShort,
+              companyName,
+              'for order details check : poonamsteel.in/orders'
+            ]
+          }
+        });
+        console.log('[WhatsApp Success] Web checkout notification triggered successfully');
+      } catch (wsErr) {
+        console.error('[WhatsApp Error] Failed to trigger checkout notification:', wsErr);
       }
 
       clearCart();
@@ -616,3 +654,25 @@ export default function Cart() {
     </div>
   );
 }
+
+const generateOrderNumber = (prefix, clientName) => {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const datePart = `${yyyy}${mm}${dd}`;
+  
+  let clientSlug = String(clientName || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+  clientSlug = clientSlug.substring(0, 3);
+  if (!clientSlug) clientSlug = 'unk';
+  while (clientSlug.length < 3) {
+    clientSlug += 'x';
+  }
+  
+  const rand = Math.floor(100 + Math.random() * 900);
+  const suffix = `${clientSlug}${rand}`.substring(0, 6);
+  
+  return `${prefix}-${datePart}-${suffix}`;
+};

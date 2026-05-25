@@ -259,7 +259,7 @@ export default function OrderHistory() {
                           fontWeight: 700,
                           color: navy
                         }}>
-                          Order #{order.id.slice(0, 8)}
+                          {order.order_number || `Order #${order.id.slice(0, 8)}`}
                         </span>
                         <span style={{
                           padding: '0.25rem 0.75rem',

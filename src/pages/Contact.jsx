@@ -211,7 +211,13 @@ export default function Contact() {
                 </div>
               </div>
             </div>
-          </div>
+
+            <p style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#64748b', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              To request data deletion, please email us at{' '}
+              <a href="mailto:poonamsteel2011@gmail.com" style={{ color: orange, fontWeight: 600, textDecoration: 'none' }}>
+                poonamsteel2011@gmail.com
+              </a>
+            </p>
 
           {/* Contact Form */}
           <div style={{

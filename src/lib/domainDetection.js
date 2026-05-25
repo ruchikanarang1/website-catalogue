@@ -22,7 +22,7 @@ import { supabase } from './supabase';
  * Set VITE_COMPANY_ID in your environment variables when deploying.
  * Falls back to localhost mapping for local development.
  */
-const LOCALHOST_COMPANY_ID = '69f9ce98-5855-4aa2-a60d-1bfece80178b';
+const LOCALHOST_COMPANY_ID = '98f6ccba-d7ef-4a7d-b346-6d432178b863';
 
 export function detectCompanyFromDomain() {
   // Production: read from env var set at deploy time

@@ -92,6 +92,12 @@ export default function Privacy() {
             <li><strong>Phone:</strong> <a href={`tel:${company.phone}`} style={{ color: '#FF6A00', textDecoration: 'none' }}>{company.phone}</a></li>
             {company.address && <li><strong>Address:</strong> {company.address}</li>}
           </ul>
+          <p style={{ marginTop: '1rem', padding: '0.75rem 1rem', background: '#fff7ed', borderRadius: '8px', border: '1px solid #fed7aa', fontSize: '0.9rem' }}>
+            To request data deletion, please email us at{' '}
+            <a href="mailto:poonamsteel2011@gmail.com" style={{ color: '#FF6A00', fontWeight: 600, textDecoration: 'none' }}>
+              poonamsteel2011@gmail.com
+            </a>
+          </p>
         </div>
       </div>
     </div>

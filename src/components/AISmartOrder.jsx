@@ -33,7 +33,9 @@ export default function AISmartOrder({ onClose }) {
             const rec = new SpeechRecognition();
             rec.continuous = true;
             rec.interimResults = true;
-            rec.lang = 'en-IN';
+            // Use hi-IN for Hindi/Telugu mixed input — browsers fall back gracefully
+            // Users can also speak in English and it still works
+            rec.lang = 'hi-IN';
 
             rec.onresult = (event) => {
                 let transcript = '';
@@ -46,7 +48,7 @@ export default function AISmartOrder({ onClose }) {
             rec.onerror = (event) => {
                 console.error("Speech error:", event.error);
                 if (event.error === 'not-allowed') {
-                    alert("Microphone access was denied or is not allowed on this connection (e.g. testing on a phone over HTTP).");
+                    alert("Microphone access was denied. Please allow microphone access and try again.");
                 } else if (event.error !== 'no-speech') {
                     alert("Speech error: " + event.error);
                 }
