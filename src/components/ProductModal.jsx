@@ -8,6 +8,7 @@ export default function ProductModal({ isOpen, onClose, product }) {
   const [hasSpecs, setHasSpecs] = useState(false);
   const [isCarouselOpen, setIsCarouselOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [descExpanded, setDescExpanded] = useState(false);
 
   const allImages = product ? [product.image_url, ...(product.images || [])].filter(Boolean) : [];
 
@@ -199,7 +200,42 @@ export default function ProductModal({ isOpen, onClose, product }) {
                background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '8px',
                borderLeft: '3px solid #cbd5e1'
              }}>
-               {product.description}
+               <div 
+                 className="description-scroll-container"
+                 style={{ 
+                   maxHeight: descExpanded ? '250px' : '100px', 
+                   overflowY: 'auto', 
+                   transition: 'max-height 0.3s ease-in-out',
+                   paddingRight: '6px'
+                 }}
+               >
+                 <div 
+                   dangerouslySetInnerHTML={{ __html: product.description }} 
+                   className="description-html-content"
+                   style={{ fontSize: '0.82rem', color: '#334155' }}
+                 />
+               </div>
+               {product.description.length > 200 && (
+                 <button 
+                   onClick={() => setDescExpanded(!descExpanded)}
+                   style={{
+                     background: 'none',
+                     border: 'none',
+                     color: '#2563eb',
+                     fontWeight: 800,
+                     fontSize: '0.72rem',
+                     cursor: 'pointer',
+                     padding: '4px 0 0 0',
+                     marginTop: '4px',
+                     display: 'flex',
+                     alignItems: 'center',
+                     gap: '4px',
+                     textTransform: 'uppercase'
+                   }}
+                 >
+                   {descExpanded ? 'Collapse Description' : 'Read Full Description'}
+                 </button>
+               )}
              </div>
            )}
         </div>
@@ -368,6 +404,51 @@ export default function ProductModal({ isOpen, onClose, product }) {
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .description-html-content h1 {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin-top: 0.25rem;
+          margin-bottom: 0.25rem;
+        }
+        .description-html-content h2 {
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin-top: 0.25rem;
+          margin-bottom: 0.2;
+        }
+        .description-html-content p {
+          margin-bottom: 0.5rem;
+          line-height: 1.45;
+          color: #475569;
+        }
+        .description-html-content ul {
+          margin-left: 1.1rem;
+          margin-bottom: 0.5rem;
+          list-style-type: disc;
+          padding-left: 2px;
+        }
+        .description-html-content li {
+          margin-bottom: 0.25rem;
+          line-height: 1.4;
+          color: #475569;
+        }
+        .description-html-content strong {
+          color: #0f172a;
+          font-weight: 700;
+        }
+        .description-scroll-container::-webkit-scrollbar {
+          width: 5px;
+        }
+        .description-scroll-container::-webkit-scrollbar-track {
+          background: #f8fafc;
+          border-radius: 4px;
+        }
+        .description-scroll-container::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
       `}</style>
     </div>
   );

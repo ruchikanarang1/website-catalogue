@@ -35,16 +35,7 @@ export default function ProductCard({ product, onAddToCart, onClick }) {
 
 
 
-  // Debug log to see what we're getting
-  if (product.id && (product.size || product.sizes)) {
-    console.log('Product size data:', { 
-      id: product.id, 
-      name: product.name,
-      size: product.size, 
-      sizes: product.sizes,
-      sizeOptions 
-    });
-  }
+
 
   const handleIncrease = (e) => {
     e.stopPropagation();
