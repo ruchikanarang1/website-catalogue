@@ -32,11 +32,17 @@ export default function Navbar() {
   const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/products', label: 'Products' },
+    { to: '/products?view=new-arrivals', label: '✨ New Arrivals' },
     { to: '/about', label: 'About' },
     { to: '/contact', label: 'Contact' },
   ];
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => {
+    if (path.includes('?')) {
+      return location.pathname + location.search === path;
+    }
+    return location.pathname === path && location.search === '';
+  };
 
   return (
     <>

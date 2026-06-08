@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Search, Package, Loader2, SlidersHorizontal } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { detectCompanyFromDomain } from '../lib/domainDetection';
@@ -9,6 +10,9 @@ import ProductModal from '../components/ProductModal';
 export default function Products() {
   const companyId = detectCompanyFromDomain();
   const { addItem } = useCart();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const isNewArrivalsView = queryParams.get('view') === 'new-arrivals';
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +58,8 @@ export default function Products() {
                            p.brand?.toLowerCase().includes(q);
       const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
       const matchesBrand = selectedBrand === 'All' || p.brand === selectedBrand;
-      return matchesSearch && matchesCategory && matchesBrand;
+      const matchesNewArrival = !isNewArrivalsView || p.is_new_arrival;
+      return matchesSearch && matchesCategory && matchesBrand && matchesNewArrival;
     })
     .sort((a, b) => {
       if (sortBy === 'name') {
@@ -183,7 +188,7 @@ export default function Products() {
               <label style={{
                 fontSize: '0.875rem',
                 fontWeight: 600,
-                color: '#374151',
+                color: isNewArrivalsView ? '#fff' : '#374151',
                 whiteSpace: 'nowrap'
               }}>
                 Sort by:

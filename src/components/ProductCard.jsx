@@ -1,12 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Plus, Minus } from 'lucide-react';
+import { Package, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { detectAndLoadCompany } from '../lib/domainDetection';
 
 export default function ProductCard({ product, onAddToCart, onClick }) {
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [selectedSize, setSelectedSize] = useState('');
+  const [currentImgIdx, setCurrentImgIdx] = useState(0);
   const { cart, updateQuantity, removeItem } = useCart();
+  const [companyPhone, setCompanyPhone] = useState('');
+
+  useEffect(() => {
+    detectAndLoadCompany().then(({ company }) => {
+      if (company) {
+         setCompanyPhone(company.contact_phone || company.phone || '');
+      }
+    });
+  }, []);
+
+  const handleRequestQuote = (e) => {
+    e.stopPropagation();
+    const phone = companyPhone ? companyPhone.replace(/\D/g, '') : '';
+    const formattedPhone = phone.length === 10 ? `91${phone}` : phone;
+    
+    const message = `Hi, I would like to request a quote for:
+*${product.name}*
+${product.brand ? `Brand: ${product.brand}\n` : ''}${selectedSize ? `Size: ${selectedSize}\n` : ''}${product.description ? `Details: ${product.description}\n` : ''}
+Product Link: ${window.location.origin}/products
+
+Could you please provide the pricing and availability?`;
+
+    const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+  };
 
   const red = '#dc2626';
   const black = '#000000';
@@ -34,8 +61,26 @@ export default function ProductCard({ product, onAddToCart, onClick }) {
   const quantity = cartItem?.quantity || 0;
 
 
+  const images = product.images && product.images.length > 0 ? product.images : (product.image_url ? [product.image_url] : []);
 
+  useEffect(() => {
+    if (images.length > 1 && !isHovered) {
+      const interval = setInterval(() => {
+        setCurrentImgIdx((prev) => (prev + 1) % images.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [images.length, isHovered]);
 
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    setCurrentImgIdx((prev) => (prev + 1) % images.length);
+  };
+  
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    setCurrentImgIdx((prev) => (prev - 1 + images.length) % images.length);
+  };
 
   const handleIncrease = (e) => {
     e.stopPropagation();
@@ -90,18 +135,35 @@ export default function ProductCard({ product, onAddToCart, onClick }) {
           alignItems: 'center',
           justifyContent: 'center'
         }}>
-          {product.image_url && !imageError ? (
-            <img
-              src={product.image_url}
-              alt={product.name}
-              onError={() => setImageError(true)}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                padding: '0.5rem'
-              }}
-            />
+          {images.length > 0 && !imageError ? (
+            <>
+              <img
+                src={images[currentImgIdx]}
+                alt={product.name}
+                onError={() => setImageError(true)}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  padding: '0.5rem'
+                }}
+              />
+              {images.length > 1 && isHovered && (
+                <>
+                  <button onClick={handlePrevImage} style={{ position: 'absolute', left: 4, background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%', padding: 4, cursor: 'pointer', zIndex: 2 }}>
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button onClick={handleNextImage} style={{ position: 'absolute', right: 4, background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%', padding: 4, cursor: 'pointer', zIndex: 2 }}>
+                    <ChevronRight size={16} />
+                  </button>
+                  <div style={{ position: 'absolute', bottom: 8, display: 'flex', gap: 4, zIndex: 2 }}>
+                    {images.map((_, i) => (
+                      <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: i === currentImgIdx ? red : 'rgba(0,0,0,0.3)' }} />
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
           ) : (
             <Package size={40} color="#d1d5db" />
           )}
@@ -121,9 +183,31 @@ export default function ProductCard({ product, onAddToCart, onClick }) {
             fontWeight: 600,
             color: '#374151',
             textTransform: 'uppercase',
-            letterSpacing: '0.02em'
+            letterSpacing: '0.02em',
+            zIndex: 1
           }}>
             {product.category}
+          </div>
+        )}
+
+        {/* New Arrival Badge */}
+        {product.is_new_arrival && (
+          <div style={{
+            position: 'absolute',
+            top: '0.5rem',
+            right: '0.5rem',
+            background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+            padding: '0.25rem 0.6rem',
+            borderRadius: '999px',
+            fontSize: '0.7rem',
+            fontWeight: 800,
+            color: 'white',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            boxShadow: '0 2px 8px rgba(220, 38, 38, 0.4)',
+            zIndex: 1
+          }}>
+            ✨ NEW
           </div>
         )}
       </div>
@@ -166,36 +250,37 @@ export default function ProductCard({ product, onAddToCart, onClick }) {
           {product.name}
         </h3>
 
-        {/* Size Dropdown - Always show, disabled if no dimensions */}
-        <div style={{ marginTop: '0.25rem' }}>
-          <select
-            value={selectedSize}
-            onChange={(e) => {
-              e.stopPropagation();
-              setSelectedSize(e.target.value);
-            }}
-            onClick={(e) => e.stopPropagation()}
-            disabled={sizeOptions.length === 0}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #d1d5db',
-              borderRadius: '4px',
-              fontSize: '0.8125rem',
-              background: sizeOptions.length === 0 ? '#f3f4f6' : 'white',
-              cursor: sizeOptions.length === 0 ? 'not-allowed' : 'pointer',
-              outline: 'none',
-              fontFamily: 'inherit',
-              fontWeight: 500,
-              color: selectedSize ? black : '#9ca3af'
-            }}
-          >
-            <option value="">{sizeOptions.length === 0 ? 'No sizes available' : 'Select Size'}</option>
-            {sizeOptions.map((size, idx) => (
-              <option key={idx} value={size}>{size}</option>
-            ))}
-          </select>
-        </div>
+        {/* Size Dropdown - Only show if sizes exist */}
+        {sizeOptions.length > 0 && (
+          <div style={{ marginTop: '0.25rem' }}>
+            <select
+              value={selectedSize}
+              onChange={(e) => {
+                e.stopPropagation();
+                setSelectedSize(e.target.value);
+              }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: '100%',
+                padding: '0.5rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '4px',
+                fontSize: '0.8125rem',
+                background: 'white',
+                cursor: 'pointer',
+                outline: 'none',
+                fontFamily: 'inherit',
+                fontWeight: 500,
+                color: selectedSize ? black : '#9ca3af'
+              }}
+            >
+              <option value="">Select Size</option>
+              {sizeOptions.map((size, idx) => (
+                <option key={idx} value={size}>{size}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Spacer */}
         <div style={{ flex: 1 }} />
@@ -224,112 +309,142 @@ export default function ProductCard({ product, onAddToCart, onClick }) {
         )}
 
         {/* Add/Quantity Controls */}
-        <div style={{ marginTop: '0.75rem' }}>
-          {quantity === 0 ? (
-            <button
-              onClick={handleIncrease}
-              style={{
-                width: '100%',
-                background: red,
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                padding: '0.625rem',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.375rem',
-                transition: 'background 0.2s',
-                letterSpacing: '0.01em'
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#b91c1c')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = red)}
-            >
-              <Plus size={14} />
-              ADD
-            </button>
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                background: '#fafafa',
-                border: '1px solid #e5e7eb',
-                borderRadius: '4px',
-                padding: '0.375rem 0.5rem'
-              }}
-            >
-              <button
-                onClick={handleDecrease}
-                style={{
-                  background: 'white',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '2px',
-                  width: '28px',
-                  height: '28px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: black,
-                  fontWeight: 600,
-                  fontSize: '1.125rem',
-                  flexShrink: 0,
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = black;
-                  e.currentTarget.style.color = 'white';
-                  e.currentTarget.style.borderColor = black;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'white';
-                  e.currentTarget.style.color = black;
-                  e.currentTarget.style.borderColor = '#d1d5db';
-                }}
-              >
-                −
-              </button>
-              <span
-                style={{
-                  minWidth: '2rem',
-                  textAlign: 'center',
-                  fontWeight: 700,
-                  fontSize: '0.9375rem',
-                  color: black
-                }}
-              >
-                {quantity}
-              </span>
+        <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
+          <div style={{ flex: 1 }}>
+            {quantity === 0 ? (
               <button
                 onClick={handleIncrease}
                 style={{
-                  background: black,
-                  border: '1px solid ' + black,
-                  borderRadius: '2px',
-                  width: '28px',
-                  height: '28px',
+                  width: '100%',
+                  height: '100%',
+                  background: red,
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '0.625rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: 'white',
-                  fontWeight: 600,
-                  fontSize: '1.125rem',
-                  flexShrink: 0,
-                  transition: 'background 0.2s'
+                  gap: '0.375rem',
+                  transition: 'background 0.2s',
+                  letterSpacing: '0.01em'
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#1f2937'}
-                onMouseLeave={(e) => e.currentTarget.style.background = black}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#b91c1c')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = red)}
               >
-                +
+                <Plus size={14} />
+                ADD
               </button>
-            </div>
-          )}
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: '#fafafa',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '4px',
+                  padding: '0.375rem 0.5rem',
+                  height: '100%',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <button
+                  onClick={handleDecrease}
+                  style={{
+                    background: 'white',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '2px',
+                    width: '28px',
+                    height: '28px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: black,
+                    fontWeight: 600,
+                    fontSize: '1.125rem',
+                    flexShrink: 0,
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = black;
+                    e.currentTarget.style.color = 'white';
+                    e.currentTarget.style.borderColor = black;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'white';
+                    e.currentTarget.style.color = black;
+                    e.currentTarget.style.borderColor = '#d1d5db';
+                  }}
+                >
+                  −
+                </button>
+                <span
+                  style={{
+                    minWidth: '2rem',
+                    textAlign: 'center',
+                    fontWeight: 700,
+                    fontSize: '0.9375rem',
+                    color: black
+                  }}
+                >
+                  {quantity}
+                </span>
+                <button
+                  onClick={handleIncrease}
+                  style={{
+                    background: black,
+                    border: '1px solid ' + black,
+                    borderRadius: '2px',
+                    width: '28px',
+                    height: '28px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '1.125rem',
+                    flexShrink: 0,
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#1f2937'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = black}
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={handleRequestQuote}
+            style={{
+              flex: 1,
+              background: black,
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '0.625rem',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.375rem',
+              transition: 'background 0.2s',
+              letterSpacing: '0.01em'
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = black)}
+          >
+            QUOTE
+          </button>
         </div>
       </div>
     </div>

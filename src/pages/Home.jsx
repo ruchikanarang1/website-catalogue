@@ -6,6 +6,8 @@ import { detectCompanyFromDomain } from '../lib/domainDetection';
 import ProductCard from '../components/ProductCard';
 import ScrollHero from '../components/ScrollHero';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const stats = [
   { value: '20+', label: 'Years Experience' },
@@ -26,21 +28,47 @@ const whyUs = [
 export default function Home() {
   const companyId = detectCompanyFromDomain();
   const { addItem } = useCart();
+  const { profile } = useAuth();
+  const navigate = useNavigate();
   const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
   const [company, setCompany] = useState(null);
+  const [showRepeatToast, setShowRepeatToast] = useState(false);
 
   useEffect(() => {
     if (!companyId) return;
     const load = async () => {
-      const [{ data: products }, { data: comp }] = await Promise.all([
+      const [{ data: products }, { data: na }, { data: comp }] = await Promise.all([
         supabase.from('products').select('*').eq('company_id', companyId).limit(8),
+        supabase.from('products').select('*').eq('company_id', companyId).eq('is_new_arrival', true).limit(8),
         supabase.from('companies').select('*').eq('id', companyId).single()
       ]);
       setFeaturedProducts(products || []);
+      setNewArrivals(na || []);
       setCompany(comp);
     };
     load();
   }, [companyId]);
+
+  useEffect(() => {
+    if (profile?.email) {
+      const checkOrders = async () => {
+        try {
+          const { count } = await supabase
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .eq('customer_email', profile.email);
+            
+          if (count > 0) {
+            setShowRepeatToast(true);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      checkOrders();
+    }
+  }, [profile]);
 
   const companyName = company?.name || 'Poonam Stainless Steel';
   const companyPhone = company?.phone || '';
@@ -97,41 +125,65 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Products Carousel ── */}
-      {featuredProducts.length > 0 && (
-        <section style={{ padding: '4rem 0 4rem', background: 'white', overflow: 'hidden' }} className="carousel-section">
-          <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
-                <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#DC2626', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Our Products</p>
-                <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, color: '#111827', margin: 0, letterSpacing: '-0.02em' }}>Featured from our catalogue</h2>
-              </div>
-              <Link to="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#DC2626', fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none' }}
-                onMouseEnter={e => e.currentTarget.style.gap = '0.7rem'}
-                onMouseLeave={e => e.currentTarget.style.gap = '0.4rem'}
-              >
-                View All <ArrowRight size={16} />
-              </Link>
-            </div>
-          </div>
-          <div style={{ position: 'relative', overflow: 'hidden' }}>
-            <div className="carousel-track" style={{
-              display: 'flex', gap: '1.25rem',
-              animation: 'carousel 30s linear infinite',
-              width: 'max-content'
-            }}>
-              {[...featuredProducts, ...featuredProducts].map((product, i) => (
-                <div key={i} style={{ width: '220px', flexShrink: 0 }}>
-                  <ProductCard product={product} onAddToCart={(prod, size) => addItem(prod, size)} />
-                </div>
-              ))}
+      {/* ── Prod      {/* ── Fun Artsy New Arrivals Banner ── */}
+      {newArrivals.length > 0 && (
+        <section style={{ padding: '4rem 1.5rem 2rem 1.5rem', background: '#FAFAFA', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
+          {/* Fun Artsy Background Shapes */}
+          <div style={{ position: 'absolute', top: '-10%', left: '10%', width: '250px', height: '250px', background: '#DC2626', borderRadius: '40% 60% 70% 30% / 40% 50% 60% 50%', opacity: 0.1, zIndex: 0, filter: 'blur(30px)' }} />
+          <div style={{ position: 'absolute', bottom: '-20%', right: '10%', width: '300px', height: '300px', background: '#F59E0B', borderRadius: '50% 50% 30% 70% / 50% 30% 70% 50%', opacity: 0.15, zIndex: 0, filter: 'blur(40px)' }} />
+          
+          <div style={{ maxWidth: '700px', margin: '0 auto', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h2 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 900, color: '#111827', margin: 0, lineHeight: 0.95, letterSpacing: '-0.04em' }}>
+              Fresh <br/><span style={{ color: '#DC2626', WebkitTextStroke: '2px #DC2626', textFillColor: 'transparent', WebkitTextFillColor: 'transparent' }}>Arrivals.</span>
+            </h2>
+            <p style={{ marginTop: '1.25rem', fontSize: '1rem', color: '#4B5563', lineHeight: 1.5, maxWidth: '450px' }}>
+              Explore our most recently added pieces. We're constantly updating our catalogue with fresh, professional-grade additions.
+            </p>
+            <div style={{ marginTop: '1.5rem', display: 'inline-block', transform: 'rotate(-2deg)', background: '#F59E0B', color: 'white', padding: '0.5rem 1.25rem', borderRadius: '30px', fontWeight: 800, fontSize: '0.8rem', boxShadow: '3px 3px 0px #111827', border: '2px solid #111827' }}>
+              HOT RIGHT NOW 🔥
             </div>
           </div>
         </section>
       )}
 
-
-
+      {/* ── New Arrivals Carousel ── */}
+      {newArrivals.length > 0 && (
+        <section style={{ padding: '1rem 0 5rem 0', background: '#FAFAFA', overflow: 'hidden' }}>
+          <div style={{ position: 'relative', overflow: 'hidden' }}>
+            <div className="carousel-track" style={{
+              display: 'flex', gap: '2rem',
+              animation: 'carousel 30s linear infinite',
+              width: 'max-content',
+              padding: '1rem 2rem'
+            }}>
+              {[...newArrivals, ...newArrivals, ...newArrivals, ...newArrivals].map((product, i) => (
+                <div key={product.id + '-' + i} style={{ width: '250px', flexShrink: 0, position: 'relative' }}>
+                  {/* Subtle artsy shadow block for the grid items */}
+                  <div style={{ position: 'absolute', inset: 0, background: i % 2 === 0 ? '#111827' : '#DC2626', borderRadius: '12px', transform: 'translate(6px, 6px)', zIndex: 0 }} />
+                  
+                  <div style={{ position: 'relative', zIndex: 1, background: 'white', borderRadius: '12px', overflow: 'hidden', border: '2px solid #111827', height: '100%', transition: 'transform 0.2s', display: 'flex' }}
+                       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)' }}
+                       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)' }}
+                  >
+                    <div style={{ width: '100%' }}>
+                      <ProductCard product={product} onAddToCart={(prod, size) => addItem(prod, size)} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3.5rem' }}>
+            <Link to="/products?view=new-arrivals" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#111827', color: 'white', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: '30px', transition: 'background 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#374151'}
+              onMouseLeave={e => e.currentTarget.style.background = '#111827'}
+            >
+              View All New Additions <ArrowRight size={16} />
+            </Link>
+          </div>
+        </section>
+      )}
       <style>{`
         @keyframes carousel {
           0% { transform: translateX(0); }
@@ -196,6 +248,74 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* ── Repeat Order Toast ── */}
+      {showRepeatToast && (
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+          background: 'white',
+          padding: '1.25rem',
+          borderRadius: '12px',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05)',
+          zIndex: 50,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.75rem',
+          maxWidth: '300px',
+          animation: 'slideUp 0.3s ease-out'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>
+              Want to repeat your last order?
+            </h4>
+            <button
+              onClick={() => setShowRepeatToast(false)}
+              style={{
+                background: 'transparent', border: 'none', cursor: 'pointer', padding: '0.2rem',
+                color: '#94a3b8', lineHeight: 1
+              }}
+            >
+              ✕
+            </button>
+          </div>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
+            You can easily reorder your previous items with just a click.
+          </p>
+          <button
+            onClick={() => {
+              setShowRepeatToast(false);
+              navigate('/orders');
+            }}
+            style={{
+              background: '#DC2626',
+              color: 'white',
+              border: 'none',
+              padding: '0.6rem 1rem',
+              borderRadius: '6px',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.4rem',
+              transition: 'background 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#b91c1c'}
+            onMouseLeave={e => e.currentTarget.style.background = '#DC2626'}
+          >
+            <Clock size={14} /> Repeat Order
+          </button>
+        </div>
+      )}
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translateY(100px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

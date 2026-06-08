@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Package, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { detectAndLoadCompany } from '../lib/domainDetection';
 
 export default function ProductModal({ isOpen, onClose, product }) {
   const { addBulkItems } = useCart();
@@ -9,8 +10,37 @@ export default function ProductModal({ isOpen, onClose, product }) {
   const [isCarouselOpen, setIsCarouselOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [descExpanded, setDescExpanded] = useState(false);
+  const [companyPhone, setCompanyPhone] = useState('');
 
   const allImages = product ? [product.image_url, ...(product.images || [])].filter(Boolean) : [];
+
+  useEffect(() => {
+    if (product && (!product.price || Number(product.price) === 0)) {
+      detectAndLoadCompany().then(({ company }) => {
+        if (company) {
+           setCompanyPhone(company.contact_phone || company.phone || '');
+        }
+      });
+    }
+  }, [product]);
+
+  const handleRequestQuote = () => {
+    const phone = companyPhone ? companyPhone.replace(/\D/g, '') : '';
+    const formattedPhone = phone.length === 10 ? `91${phone}` : phone;
+    
+    const itemsRequested = rows.filter(r => r.quantity > 0).map(r => `- ${r.quantity} ${r.unit} of Size: ${r.size || 'Std'}`).join('\n');
+    const itemsStr = itemsRequested ? `\nRequested Quantities:\n${itemsRequested}\n` : '';
+
+    const message = `Hi, I would like to request a quote for:
+*${product.name}*
+${product.brand ? `Brand: ${product.brand}\n` : ''}${product.description ? `Details: ${product.description}\n` : ''}${itemsStr}
+Product Link: ${window.location.origin}/products
+
+Could you please provide the pricing and availability?`;
+
+    const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+  };
 
   // Initialize rows based on product sizes and variants
   useEffect(() => {
@@ -169,8 +199,8 @@ export default function ProductModal({ isOpen, onClose, product }) {
                  width: '110px', height: '110px', borderRadius: '6px', overflow: 'hidden', background: '#f8fafc', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0', cursor: allImages.length > 0 ? 'pointer' : 'default'
                }}
              >
-               {product.image_url ? (
-                 <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '0.25rem' }} />
+               {allImages.length > 0 ? (
+                 <img src={allImages[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '0.25rem' }} />
                ) : (
                  <Package size={40} color="#94a3b8" />
                )}
@@ -328,28 +358,52 @@ export default function ProductModal({ isOpen, onClose, product }) {
           <span style={{ fontSize: '0.875rem', color: '#475569', fontWeight: 600 }}>
             {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
           </span>
-          <button
-            onClick={handleAddToCart}
-            disabled={totalQuantity === 0}
-            style={{
-              background: totalQuantity === 0 ? '#cbd5e1' : '#dc2626',
-              color: 'white',
-              border: 'none',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '8px',
-              fontSize: '0.9375rem',
-              fontWeight: 700,
-              cursor: totalQuantity === 0 ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              transition: 'background 0.2s',
-              boxShadow: totalQuantity > 0 ? '0 4px 12px rgba(220, 38, 38, 0.3)' : 'none'
-            }}
-          >
-            <ShoppingCart size={18} />
-            Add To Cart
-          </button>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button
+              onClick={handleRequestQuote}
+              style={{
+                background: '#000000',
+                color: 'white',
+                border: 'none',
+                padding: '0.75rem 1.25rem',
+                borderRadius: '8px',
+                fontSize: '0.9375rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'background 0.2s',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#333333')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = '#000000')}
+            >
+              Request Quote
+            </button>
+            <button
+              onClick={handleAddToCart}
+              disabled={totalQuantity === 0}
+              style={{
+                background: totalQuantity === 0 ? '#cbd5e1' : '#dc2626',
+                color: 'white',
+                border: 'none',
+                padding: '0.75rem 1.25rem',
+                borderRadius: '8px',
+                fontSize: '0.9375rem',
+                fontWeight: 700,
+                cursor: totalQuantity === 0 ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'background 0.2s',
+                boxShadow: totalQuantity > 0 ? '0 4px 12px rgba(220, 38, 38, 0.3)' : 'none'
+              }}
+            >
+              <ShoppingCart size={18} />
+              Add To Cart
+            </button>
+          </div>
         </div>
       </div>
 

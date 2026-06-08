@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { Package, ChevronDown, ChevronUp, Filter, Loader2, ShoppingBag } from 'lucide-react';
+import { Package, ChevronDown, ChevronUp, Filter, Loader2, ShoppingBag, Repeat } from 'lucide-react';
+import { useCart } from '../contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function OrderHistory() {
   const { profile } = useAuth();
+  const { addBulkItems } = useCart();
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -47,6 +51,26 @@ export default function OrderHistory() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRepeatOrder = (e, order) => {
+    e.stopPropagation();
+    if (!order.items || order.items.length === 0) return;
+
+    const itemsToAdd = order.items.map(item => ({
+      product: {
+        id: item.product_id || item.id,
+        name: item.product_name || item.name,
+        price: item.unit_price || item.price || 0,
+        category: item.category || ''
+      },
+      size: item.selectedSize || item.size || '',
+      quantity: item.quantity,
+      unit: item.selectedUnit || item.unit || 'pieces'
+    }));
+
+    addBulkItems(itemsToAdd);
+    navigate('/cart');
   };
 
   const toggleOrderDetails = (orderId) => {
@@ -315,6 +339,36 @@ export default function OrderHistory() {
                         </div>
                         items
                       </div>
+
+                      <button
+                        onClick={(e) => handleRepeatOrder(e, order)}
+                        style={{
+                          background: 'white',
+                          color: orange,
+                          border: `1px solid ${orange}`,
+                          borderRadius: '6px',
+                          padding: '0.4rem 0.8rem',
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          transition: 'all 0.2s',
+                          textTransform: 'uppercase'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = orange;
+                          e.currentTarget.style.color = 'white';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'white';
+                          e.currentTarget.style.color = orange;
+                        }}
+                      >
+                        <Repeat size={14} />
+                        Repeat
+                      </button>
 
                       {selectedOrder === order.id ? (
                         <ChevronUp size={20} color={orange} />
