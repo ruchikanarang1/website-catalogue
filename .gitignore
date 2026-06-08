@@ -56,3 +56,9 @@ DOMAIN_SETUP.md
 # CSV templates
 *.csv
 template.csv
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
